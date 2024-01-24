@@ -40,6 +40,21 @@ public class Worker {
 		}
 	}
 
+	public void filterContracts(int year, int month) {
+		
+		boolean inexistent  = true;
+		for (HourContract contract : contracts) {
+			if (contract.getDate().getYear() == year && contract.getDate().getMonthValue() == month) {
+				System.out.println("\n"+contract);
+				inexistent = false;
+			}
+		}
+		
+		if(inexistent) {
+			System.out.println("Não há contratos que correspondam a esse mês e ano!");
+		}
+	}
+
 	public double totalIncome() {
 		double sum = baseSalary;
 
@@ -52,7 +67,7 @@ public class Worker {
 
 	@Override
 	public String toString() {
-		return "Nome :" + name + "\nDepartamento: " + department + "\nNível: " + level + "\nSalário Base: "
-				+ baseSalary+"\nTotal Ganho: "+totalIncome();
+		return "Nome :" + name + "\nDepartamento: " + department + "\nNível: " + level + "\nSalário Base: " + baseSalary
+				+ "\nTotal Ganho: " + totalIncome();
 	}
 }

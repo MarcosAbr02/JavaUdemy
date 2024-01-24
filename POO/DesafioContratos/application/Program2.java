@@ -44,12 +44,48 @@ public class Program2 {
 				removeWorker(teclado, workers);
 				break;
 
-			case EDIT_WORKER_CONRACTS:
+			case EDIT_WORKER_CONTRACTS:
 				editWorkerContracts(teclado, workers);
 				break;
 
 			case SHOW_WORKER_CONTRACTS:
-				showWorkerContracts(null);
+				if (workers.isEmpty()) {
+					System.out.println("Não há funcionários para que sejam exibidos contratos!");
+					break;
+				}
+
+				showWorkers(workers);
+
+				System.out.println("\nDigite o índice do funcionário que deseja digitar!");
+
+				int index;
+				while (true) {
+					try {
+						index = teclado.nextInt();
+
+						if (index < 0 || index > workers.size()) {
+							System.out.println("O número digitado não corresponde a nenhum funionário!");
+							continue;
+						}
+
+						break;
+					} catch (InputMismatchException e) {
+						System.out.println("\nDigite um número válido ou 0 para sair.");
+						teclado.nextLine();
+						continue;
+					}
+				}
+				
+				if (index == 0) {
+					returnMsg();
+					break;
+				}
+
+				// Array List começam em 0 e lista exibição "showWorkers" começa em 0
+				Worker opcWorker = workers.get(index - 1);
+				
+				showWorkerContracts(opcWorker);
+
 				break;
 			case SHOW_WORKERS:
 				showWorkers(workers);
@@ -117,7 +153,8 @@ public class Program2 {
 				baseSalary = teclado.nextDouble();
 				break;
 			} catch (InputMismatchException e) {
-				System.out.println("\n por favor insira um número válido!");
+				System.out.println("\nPor favor insira um número válido!");
+				teclado.nextLine();
 				continue;
 			}
 		}
@@ -233,8 +270,11 @@ public class Program2 {
 			case REMOVE_CONTRACT:
 				removeContract(teclado, opcWorker);
 				break;
-			case SHOW_CONTRACT:
+			case SHOW_CONTRACTS:
 				showWorkerContracts(opcWorker);
+				break;
+			case SEARCH_BY_MONTH:
+				searchByMonth(teclado, opcWorker);
 				break;
 			case EXIT:
 				returnMsg();
@@ -276,7 +316,7 @@ public class Program2 {
 
 	// Metódos especifícos de contratos
 	public static void menuEditContracts() {
-		System.out.println("\n1-Adicionar contrato\n2-Remover contrato\n3-Exibir Contratos\n0-Sair");
+		System.out.println("\n1-Adicionar contrato\n2-Remover contrato\n3-Exibir Contratos\n4-Pesquisar contratos por mês e ano\n0-Sair");
 	}
 
 	public static void addContract(Scanner teclado, Worker worker) {
@@ -303,7 +343,7 @@ public class Program2 {
 			}
 		}
 
-		System.out.print("\nValor por hora:");
+		System.out.print("Valor por hora:");
 
 		double valuePerHour;
 		while (true) {
@@ -322,7 +362,7 @@ public class Program2 {
 			}
 		}
 
-		System.out.print("\nDuração (horas): ");
+		System.out.print("Duração (horas): ");
 
 		int duration;
 		while (true) {
@@ -354,7 +394,7 @@ public class Program2 {
 		LocalDate date;
 		while (true) {
 			try {
-				System.out.print("\nDigite a data (DD/MM/YYYY)::");
+				System.out.print("\nDigite a data (DD/MM/YYYY): ");
 				String dateTemp = teclado.next();
 
 				if (dateTemp.equals("0")) {
@@ -387,16 +427,66 @@ public class Program2 {
 		}
 	}
 
+	public static void searchByMonth(Scanner teclado, Worker worker) {
+		if (worker.getContracts().isEmpty()) {
+			System.out.println("Parece que esse funcionário não possui nenhum contrato cadastrado!");
+			return;
+		}
+		System.out.println("\nDigite o mês e ano dos contratos que deseja visualizar:");
+		
+		System.out.print("\nMês: ");
+		int month;
+		while(true) {
+			try {
+			month = teclado.nextInt();
+			
+			break;
+			}
+			catch(InputMismatchException e) {
+				System.out.println("\nDigite um número válido! ou 0 para sair!");
+				teclado.nextLine();
+				continue;
+			}
+		}
+		
+		if(month==0) {
+			returnMsg();
+			return;
+		}
+		
+		System.out.print("Ano: ");
+		int year;
+		while(true) {
+			try {
+			year = teclado.nextInt();
+			break;
+		}
+			catch(InputMismatchException e ) {
+				System.out.println("\nDigite um número válido! ou 0 para sair!");
+				teclado.nextLine();
+				continue;
+			}
+		}
+		
+		if(year==0) {
+			returnMsg();
+			return;
+		}
+		
+		worker.filterContracts(year, month);
+	}
+
 	// Constantes do programa principal
 	private static final int EXIT = 0;
 	private static final int ADD_WORKER = 1;
 	private static final int REMOVE_WORKER = 2;
-	private static final int EDIT_WORKER_CONRACTS = 3;
+	private static final int EDIT_WORKER_CONTRACTS = 3;
 	private static final int SHOW_WORKER_CONTRACTS = 4;
 	private static final int SHOW_WORKERS = 5;
 
 	// Constantes da função de editar contratos
 	private static final int ADD_CONTRACT = 1;
 	private static final int REMOVE_CONTRACT = 2;
-	private static final int SHOW_CONTRACT = 3;
+	private static final int SHOW_CONTRACTS = 3;
+	private static final int SEARCH_BY_MONTH = 4;
 }
