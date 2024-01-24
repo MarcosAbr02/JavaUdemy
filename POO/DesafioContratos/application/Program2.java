@@ -1,11 +1,15 @@
 package application;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.Scanner;
 
 import entites.Department;
+import entites.HourContract;
 import entites.Worker;
 import entites.enums.WorkerLevel;
 
@@ -41,10 +45,11 @@ public class Program2 {
 				break;
 
 			case EDIT_WORKER_CONRACTS:
-
+				editWorkerContracts(teclado, workers);
 				break;
 
 			case SHOW_WORKER_CONTRACTS:
+				showWorkerContracts(null);
 				break;
 			case SHOW_WORKERS:
 				showWorkers(workers);
@@ -77,12 +82,17 @@ public class Program2 {
 		System.out.print("Name:");
 		String name = teclado.next();
 
+		if (name.equals("0")) {
+			returnMsg();
+			return;
+		}
+
 		System.out.print("Level:");
 
 		WorkerLevel level;
 		while (true) {
 			try {
-				String temp = teclado.next();
+				String temp = teclado.next().toUpperCase();
 				if (temp.equals("0")) {
 					returnMsg();
 					return;
@@ -90,6 +100,7 @@ public class Program2 {
 
 				level = WorkerLevel.valueOf(temp);
 				break;
+
 			} catch (IllegalArgumentException e) {
 				System.out.println("\nOpa, parece que você digitou um valor que não corresponde a nenhum level:\n");
 				System.out.println("JUNIOR,\n" + "MID_LEVEL,\n" + "SENIOR\n");
@@ -167,50 +178,71 @@ public class Program2 {
 		while (true) {
 			try {
 				index = teclado.nextInt();
+
+				if (index < 0 || index > workers.size()) {
+					System.out.println("\nParece que o índice digitado não corresponde a nenhum funcionário"
+							+ ", por favor tente novamente ou digite 0 para sair");
+					teclado.nextLine();
+					continue;
+				}
 				break;
 			} catch (InputMismatchException e) {
 				System.out.println("\nDigite um número válido!");
-				teclado.nextLine();
 				continue;
 			}
 		}
+
+		// -1 Pois o arrayList começa em 0 mas os funcionários são listados a partir do
+		// 1
+		Worker opcWorker = workers.get(index - 1);
 
 		if (index <= 0 || index > workers.size()) {
 			returnMsg();
 			return;
 		}
-		
-		
-		showWorkerContracts(workers, workers.get(index));
-		
-		System.out.println("\nOque deseja fazer?");
-		menuEditContracts();
-		
-		int opc;
-		while (true) {
-			try {
-				opc = teclado.nextInt();
-				break;
-			} catch (InputMismatchException e) {
-				System.out.println("\nDigite um número válido!");
-				teclado.nextLine();
-				continue;
+
+		showWorkerContracts(opcWorker);
+
+		boolean menuEditContracts = true;
+		while (menuEditContracts) {
+
+			System.out.println("\nOque deseja fazer?");
+			menuEditContracts();
+
+			int opc;
+			while (true) {
+				try {
+					opc = teclado.nextInt();
+					break;
+				} catch (InputMismatchException e) {
+					System.out.println("\nDigite um número válido!");
+					teclado.nextLine();
+					continue;
+				}
 			}
-		}
-		
-		if(opc <= 0) {
-			returnMsg();
-			return;
-		}
-		
-		switch(opc) {
-		case ADD_CONTRACT:
-			workers.get(index).addContract(null);
-			break;
-		case REMOVE_CONTRACT:
-			break;
-		case SHOW_CONTRACT:
-			break;
+
+			if (opc <= 0) {
+				returnMsg();
+				return;
+			}
+
+			switch (opc) {
+			case ADD_CONTRACT:
+				addContract(teclado, opcWorker);
+				break;
+			case REMOVE_CONTRACT:
+				removeContract(teclado, opcWorker);
+				break;
+			case SHOW_CONTRACT:
+				showWorkerContracts(opcWorker);
+				break;
+			case EXIT:
+				returnMsg();
+				return;
+			default:
+				System.out.println("\nO número digitado não corresponde a nenhuma das opções!");
+				break;
+			}
 		}
 	}
 
@@ -221,16 +253,14 @@ public class Program2 {
 
 	}
 
-	public static void showWorkerContracts(ArrayList<Worker> workers, Worker worker) {
+	public static void showWorkerContracts(Worker worker) {
 		if (worker.getContracts().isEmpty()) {
 			System.out.println("Parece que esse funcionário não possui nenhum contrato cadastrado!");
-		}
-		else {
+		} else {
 			worker.showContracts();
 		}
 	}
-	
-	
+
 	public static void menu() {
 		System.out.println("\n1-Adicionar funcionário");
 		System.out.println("2-Remover Funcionário");
@@ -244,9 +274,119 @@ public class Program2 {
 		System.out.println("\nEntendido! voltando ao início!");
 	}
 
+	// Metódos especifícos de contratos
 	public static void menuEditContracts() {
 		System.out.println("\n1-Adicionar contrato\n2-Remover contrato\n3-Exibir Contratos\n0-Sair");
 	}
+
+	public static void addContract(Scanner teclado, Worker worker) {
+		System.out.println("\nCerto, vou precisar dos dados desse contrato:");
+		System.out.print("\nData (DD/MM/YYYY): ");
+
+		LocalDate date;
+		while (true) {
+			try {
+				String dateTemp = teclado.next();
+
+				if (dateTemp.equals("0")) {
+					returnMsg();
+					return;
+				}
+
+				DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				date = LocalDate.parse(dateTemp, fmt1);
+				break;
+			} catch (DateTimeParseException e) {
+				System.out.println("Digite uma data no formato DD/MM/YYYY ou 0 para sair");
+				teclado.nextLine();
+				continue;
+			}
+		}
+
+		System.out.print("\nValor por hora:");
+
+		double valuePerHour;
+		while (true) {
+			try {
+				valuePerHour = teclado.nextDouble();
+
+				if (valuePerHour == 0) {
+					returnMsg();
+					return;
+				}
+				break;
+			} catch (InputMismatchException e) {
+				System.out.println("Digite um número real ou 0 para sair!");
+				teclado.nextLine();
+				continue;
+			}
+		}
+
+		System.out.print("\nDuração (horas): ");
+
+		int duration;
+		while (true) {
+			try {
+				duration = teclado.nextInt();
+
+				if (duration == 0) {
+					returnMsg();
+					return;
+				}
+				break;
+			} catch (InputMismatchException e) {
+				System.out.println("Digite um número válido ou 0 para sair!");
+				teclado.nextLine();
+				continue;
+			}
+		}
+
+		worker.addContract(new HourContract(date, valuePerHour, duration));
+		System.out.println("\nContrato adicionado com sucesso!");
+		worker.showContracts();
+	}
+
+	public static void removeContract(Scanner teclado, Worker worker) {
+		System.out
+				.println("\nMuito bem, para deletar o contrato vou precisar que você digite a mesma data do contrato");
+		worker.showContracts();
+
+		LocalDate date;
+		while (true) {
+			try {
+				System.out.print("\nDigite a data (DD/MM/YYYY)::");
+				String dateTemp = teclado.next();
+
+				if (dateTemp.equals("0")) {
+					returnMsg();
+					return;
+				}
+
+				date = LocalDate.parse(dateTemp, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+				break;
+			} catch (DateTimeParseException e) {
+				System.out.println("\nDigite uma data em um formato válido! ou 0 para sair");
+			}
+		}
+
+		HourContract removeContract = null;
+		for (HourContract contract : worker.getContracts()) {
+			if (contract.getDate().equals(date)) {
+				System.out.println("\nData removida com sucesso!");
+				System.out.println(contract);
+
+				removeContract = contract;
+				break;
+			}
+		}
+
+		if (removeContract != null) {
+			worker.removeContract(removeContract);
+		} else {
+			System.out.println("\nNão encontramos nenhum contrato que correponda a essa data!");
+		}
+	}
+
 	// Constantes do programa principal
 	private static final int EXIT = 0;
 	private static final int ADD_WORKER = 1;

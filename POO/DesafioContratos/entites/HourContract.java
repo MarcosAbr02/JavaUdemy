@@ -47,8 +47,8 @@ public class HourContract {
 
 	@Override
 	public String toString() {
-		DateTimeFormatter fm1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		return "Data: " + date.format(fm1) + "\nValor por hora: " + valuePerHour + "\nHoras: " + hours
+		DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		return "Data: " + date.format(fmt1) + "\nValor por hora: " + valuePerHour + "\nHoras: " + hours
 				+ "\nValor total: " + totalValue();
 	}
 }

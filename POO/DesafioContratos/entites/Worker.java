@@ -10,7 +10,7 @@ public class Worker {
 	private Double baseSalary = 1200.0;
 	private Department department;
 
-	private ArrayList<HourContract> contracts = new ArrayList();
+	private ArrayList<HourContract> contracts = new ArrayList<>();
 
 	public Worker() {
 	}
@@ -21,8 +21,6 @@ public class Worker {
 		this.baseSalary = baseSalary;
 		this.department = department;
 	}
-	
-	
 
 	public ArrayList<HourContract> getContracts() {
 		return contracts;
@@ -37,24 +35,24 @@ public class Worker {
 	}
 
 	public void showContracts() {
-		for(HourContract contract : contracts) {
-			System.out.println("\n"+contract);
+		for (HourContract contract : contracts) {
+			System.out.println("\n" + contract);
 		}
 	}
-	public double income(int year, int month) {
+
+	public double totalIncome() {
 		double sum = baseSalary;
 
 		for (HourContract contract : contracts) {
-			if (contract.getDate().getDayOfMonth() == month && contract.getDate().getYear() == month) {
-				sum += contract.totalValue();
-			}
+			sum += contract.totalValue();
 		}
+
 		return sum;
 	}
 
 	@Override
 	public String toString() {
-		return "Nome :" + name + "\nDepartamento: " + department +
-				"\nNível: "+level+"\nSalário Base: "+baseSalary;
+		return "Nome :" + name + "\nDepartamento: " + department + "\nNível: " + level + "\nSalário Base: "
+				+ baseSalary+"\nTotal Ganho: "+totalIncome();
 	}
 }
