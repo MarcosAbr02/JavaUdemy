@@ -51,7 +51,7 @@ public class Worker {
 		}
 		
 		if(inexistent) {
-			System.out.println("Não há contratos que correspondam a esse mês e ano!");
+			System.out.println("\nNão há contratos que correspondam a esse mês e ano!");
 		}
 	}
 

@@ -30,7 +30,7 @@ public class Program2 {
 			try {
 				opc = teclado.nextInt();
 			} catch (InputMismatchException e) {
-				System.out.println("Digite um número inteiro!");
+				System.out.println("\nDigite um número inteiro!");
 				teclado.nextLine();
 				continue;
 			}
@@ -75,7 +75,7 @@ public class Program2 {
 						continue;
 					}
 				}
-				
+
 				if (index == 0) {
 					returnMsg();
 					break;
@@ -83,17 +83,19 @@ public class Program2 {
 
 				// Array List começam em 0 e lista exibição "showWorkers" começa em 0
 				Worker opcWorker = workers.get(index - 1);
-				
-				showWorkerContracts(opcWorker);
 
+				showWorkerContracts(opcWorker);
 				break;
+
 			case SHOW_WORKERS:
 				showWorkers(workers);
 				break;
+
 			case EXIT:
 				principal = false;
 				System.out.println("\nEncerrando o programa");
 				break;
+				
 			default:
 				System.out.println("\nO número digitado não corresponde a nenhuma das opções!");
 				break;
@@ -141,6 +143,7 @@ public class Program2 {
 				System.out.println("\nOpa, parece que você digitou um valor que não corresponde a nenhum level:\n");
 				System.out.println("JUNIOR,\n" + "MID_LEVEL,\n" + "SENIOR\n");
 				System.out.println("Digite um level dessa exata maneira!\n");
+				teclado.nextLine();
 				continue;
 			}
 		}
@@ -316,7 +319,8 @@ public class Program2 {
 
 	// Metódos especifícos de contratos
 	public static void menuEditContracts() {
-		System.out.println("\n1-Adicionar contrato\n2-Remover contrato\n3-Exibir Contratos\n4-Pesquisar contratos por mês e ano\n0-Sair");
+		System.out.println(
+				"\n1-Adicionar contrato\n2-Remover contrato\n3-Exibir Contratos\n4-Pesquisar contratos por mês e ano\n0-Sair");
 	}
 
 	public static void addContract(Scanner teclado, Worker worker) {
@@ -335,6 +339,12 @@ public class Program2 {
 
 				DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 				date = LocalDate.parse(dateTemp, fmt1);
+
+				if (date.isAfter(LocalDate.now())) {
+					System.out.println("\nInsira uma data válida!");
+					continue;
+				}
+
 				break;
 			} catch (DateTimeParseException e) {
 				System.out.println("Digite uma data no formato DD/MM/YYYY ou 0 para sair");
@@ -433,46 +443,44 @@ public class Program2 {
 			return;
 		}
 		System.out.println("\nDigite o mês e ano dos contratos que deseja visualizar:");
-		
+
 		System.out.print("\nMês: ");
 		int month;
-		while(true) {
+		while (true) {
 			try {
-			month = teclado.nextInt();
-			
-			break;
-			}
-			catch(InputMismatchException e) {
+				month = teclado.nextInt();
+
+				break;
+			} catch (InputMismatchException e) {
 				System.out.println("\nDigite um número válido! ou 0 para sair!");
 				teclado.nextLine();
 				continue;
 			}
 		}
-		
-		if(month==0) {
+
+		if (month == 0) {
 			returnMsg();
 			return;
 		}
-		
+
 		System.out.print("Ano: ");
 		int year;
-		while(true) {
+		while (true) {
 			try {
-			year = teclado.nextInt();
-			break;
-		}
-			catch(InputMismatchException e ) {
+				year = teclado.nextInt();
+				break;
+			} catch (InputMismatchException e) {
 				System.out.println("\nDigite um número válido! ou 0 para sair!");
 				teclado.nextLine();
 				continue;
 			}
 		}
-		
-		if(year==0) {
+
+		if (year == 0) {
 			returnMsg();
 			return;
 		}
-		
+
 		worker.filterContracts(year, month);
 	}
 
