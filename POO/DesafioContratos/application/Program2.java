@@ -397,6 +397,10 @@ public class Program2 {
 	}
 
 	public static void removeContract(Scanner teclado, Worker worker) {
+		if (worker.getContracts().isEmpty()) {
+			System.out.println("Parece que esse funcionário não possui nenhum contrato cadastrado!");
+			return;
+		}
 		System.out
 				.println("\nMuito bem, para deletar o contrato vou precisar que você digite a mesma data do contrato");
 		worker.showContracts();
